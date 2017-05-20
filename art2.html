@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Art</title>
+
+<!-- Welcome to ZIM at http://zimjs.com - Code Interactive Media Pizzazz! 				-->
+<!-- ZIM runs on the HTML Canvas powered by JavaScript and CreateJS http://createjs.com -->
+<!-- Founded by Inventor Dan Zen - http://danzen.com - Canadian New Media Award Winner 	-->
+<!-- ZIM is free to use. You can donate to help improve ZIM at http://zimjs.com/donate 	-->
+
+<!-- as of ZIM 4.3.0 load createjs namespace first -->
+<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+<script>var zon = true; // true for comments from zim code</script>
+<script src="https://d309knd7es5f10.cloudfront.net/zim_4.7.0.js"></script><!-- add _doc to see code -->
+<!-- use zimjs.com/code/distill for minified individual functions! -->
+<script src="../libraries/basics.js"></script>
+<script src="../libraries/effects.js"></script>
+
+<script>
+
+// SCALING OPTIONS
+// scaling can have values as follows with full being the default
+// "fit"		sets canvas and stage to dimensions and scales to fit inside window size
+// "outside"	sets canvas and stage to dimensions and scales to fit outside window size
+// "full"		sets stage to window size with no scaling
+// "tagID"		add canvas to HTML tag of ID - set to dimensions if provided - no scaling
+
+var scaling = "full"; // makes stage the window size but does not scale content
+var width = null;
+var height = null;
+var color = "#ebcb35";
+var frame = new zim.Frame(scaling, width, height, color); // see docs for more options and info
+frame.on("ready", function() {
+	zog("ready from ZIM Frame");
+
+	var stage = frame.stage;
+	var stageW = frame.width;
+	var stageH = frame.height;
+
+	// put your code here (you can delete this code)
+
+    // var rand = cooljs.rand(20, 10);
+    // var label = new zim.Label({text:rand})
+    //     .rot(20)
+    //     .center(stage)
+
+	var startX, startY, speedX, speedY, bounce;
+
+    var bounces = [];
+    for (var i=0; i<4; i++) {
+        startX = cooljs.rand(0, stageW);
+        startY = cooljs.rand(0, stageH);
+        speedX = cooljs.rand(.1, 1);
+        speedY = cooljs.rand(.1, 1);
+        bounce = new cooljs.Bounce(
+            [0,0,stageW,stageH],
+            startX, startY, speedX, speedY, .05
+        );
+        bounces.push(bounce);
+    }
+
+    // var circle = new zim.Circle()
+    //     .addTo(stage)
+    //     .pos(startX, startY);
+
+    var art = new zim.Shape().addTo(stage);
+
+	var count = 0;
+    function animate() {
+        requestAnimationFrame(animate);
+
+        // bounces[0].advance();
+		// bounces[1].advance();
+		// bounces[2].advance();
+		// bounces[3].advance();
+
+		count++
+		// if (count % 10 == 0) {
+		for (var i=0; i<bounces.length; i++) {
+			for (var j=0; j<9; j++) {
+				bounces[i].advance();
+			}
+		}
+		//}
+		// zim.loop(bounces.length, function(i) {
+		// 	bounces[i].advance();
+		// });
+
+        // circle.x = bounces[0].x;
+        // circle.y = bounces[0].y;
+
+		art.graphics
+		// .c()
+		.s(2)
+		.ss("black")
+		.mt(bounces[0].x, bounces[0].y)
+		.bt(
+			bounces[1].x, bounces[1].y,
+			bounces[2].x, bounces[2].y,
+			bounces[3].x, bounces[3].y
+		);
+
+        stage.update();
+    }
+    animate();
+
+
+
+	// put resizing code in here
+	// resize also gets called initially
+	frame.on("resize", resize);
+	function resize(e) {
+		stageW = frame.width;
+		stageH = frame.height;
+
+	}
+
+    stage.update();
+
+}); // end of ready
+</script>
+</head>
+
+<body>
+<!-- canvas with id="myCanvas" is made by zim Frame -->
+</body>
+</html>

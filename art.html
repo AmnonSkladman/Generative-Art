@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Art</title>
+
+<!-- Welcome to ZIM at http://zimjs.com - Code Interactive Media Pizzazz! 				-->
+<!-- ZIM runs on the HTML Canvas powered by JavaScript and CreateJS http://createjs.com -->
+<!-- Founded by Inventor Dan Zen - http://danzen.com - Canadian New Media Award Winner 	-->
+<!-- ZIM is free to use. You can donate to help improve ZIM at http://zimjs.com/donate 	-->
+
+<!-- as of ZIM 4.3.0 load createjs namespace first -->
+<script src="https://code.createjs.com/createjs-2015.11.26.min.js"></script>
+<script>var zon = true; // true for comments from zim code</script>
+<script src="https://d309knd7es5f10.cloudfront.net/zim_5.js"></script>
+<!-- use zimjs.com/code/distill for minified individual functions! -->
+<script src="../libraries/basics.js"></script>
+<script src="../libraries/effects.js"></script>
+
+
+<script>
+
+// SCALING OPTIONS
+// scaling can have values as follows with full being the default
+// "fit"		sets canvas and stage to dimensions and scales to fit inside window size
+// "outside"	sets canvas and stage to dimensions and scales to fit outside window size
+// "full"		sets stage to window size with no scaling
+// "tagID"		add canvas to HTML tag of ID - set to dimensions if provided - no scaling
+
+var scaling = "full"; // makes stage the window size but does not scale content
+var width = null;
+var height = null;
+var color = "grey";
+var frame = new zim.Frame(scaling, width, height, color); // see docs for more options and info
+frame.on("ready", function() {
+	zog("ready from ZIM Frame");
+
+	var stage = frame.stage;
+	var stageW = frame.width;
+	var stageH = frame.height;
+
+	// put your code here (you can delete this code)
+    
+    frame.loadAssets(["rocket.png"], "images/");
+    frame.on("complete", function() {
+
+        var rand = cooljs.rand(2, 100);
+        var foods = ["bananas", "bowls of pho", "doughnuts", "carrots", "pitas", "pizzas", "dragonfruits", "avocados", "mangos", "pomellos", "icecream cones", "pierogies", "falafels", "blinchikis", "spring rolls", "shawarmas", "shishkabobs", "malawaches", "waffles", "pancakes", "cupcakes", "muffins", "cakes", "pies"];
+        var foodRand = foods[Math.floor(Math.random() * foods.length)];
+
+        var startX, startY, speedX, speedY, bounce;
+
+        var bounces = [];
+        for (var i=0; i<4; i++) {
+            startX = cooljs.rand(0, stageW);
+            startY = cooljs.rand(0, stageH);
+            speedX = cooljs.rand(1, 10);
+            speedY = cooljs.rand(1, 10);
+            bounce = new cooljs.Bounce(
+                [0,0,stageW,stageH],
+                startX,
+                startY, speedX, speedY, 0.5
+            );
+            bounces.push(bounce);
+        };
+
+        var strClr = ["#A91101", "#C80815", "#FF2400", "#E32636", "#FF004F", "#A45A52", "#66023C"];
+        var bgClr = ["#333333", "#303030", "#363636", "#343434"];
+        var strClrRnd;
+        var bgClrRnd;
+        
+        var rocket = frame.asset("rocket.png");
+        stage.addChild(rocket);
+        rocket.width = 100;
+        rocket.height = 100;
+        rocket.centerReg();
+        rocket.x = startX;
+        rocket.y = startY;
+        
+        var art = new zim.Shape().addTo(stage);
+        //art.cache(0, 0, stageW, stageH);
+        //var blit = new zim.Bitmap(art.cacheCanvas).addTo(stage);
+        var g = art.graphics;
+        //g.s(2).ss(strClr); //stroke size and colour
+
+        
+        var circle = new zim.Circle()
+            .addTo(stage)
+            .pos(startX, startY)
+        ;
+
+        for (var c = 0; c < strClr.length * 3; c++) {
+            circleClone = circle.clone();
+            circleClone.x = Math.random() * (stageW - circleClone.width/2);
+            circleClone.y = Math.random() * (stageH - circleClone.height/2);
+            circleClone.width = Math.random() * 100;
+            circleClone.height = circleClone.width;
+            //circleClone.color = strClr[Math.floor(Math.random() * strClr.length)];
+            circleClone.color = cooljs.Colours();
+            stage.addChild(circleClone);
+            stage.update();  
+        };
+
+        
+        var count = 0;
+        function animate() {
+            requestAnimationFrame(animate);
+            bounces[0].advance();
+            strClrRnd = strClr[Math.floor(Math.random() * strClr.length)];
+            //og(bgClrRnd);
+            //zog(strClrRnd);
+            rocket.x = bounces[0].x;
+            rocket.y = bounces[0].y;
+            
+            circle.x = bounces[3].x;
+            circle.y = bounces[3].y;
+            //g.c().s(2).beginStroke(strClrRnd); //graphic.clear.strokeSize.strokeColour
+
+            count++
+            if (count % 10 == 0) {
+              for (var i=0; i<bounces.length; i++) {
+                for (var j=0; j<1; j++) {
+                    bounces[i].advance();
+                };
+              };
+            };
+
+            g
+                .s(8)
+                //.beginStroke(strClrRnd)
+                .beginStroke(cooljs.Colours())
+            ; //stroke size and colour
+
+            g
+                .mt(bounces[0].x,bounces[0].y)
+                .bt(
+                    bounces[1].x,bounces[1].y,
+                    bounces[2].x,bounces[2].y,
+                    bounces[3].x,bounces[3].y
+                )
+            ;
+
+            circle.color = strClrRnd;
+
+            //art.updateCache("source-over");
+            
+            //zog(speedX);
+            
+            //zog(bounces[0].speedX);
+            //zog(bounces[0].speedY);
+            
+            if (bounces[0].speedX > 0 && bounces[0].speedY > 0) {
+                rocket.rot(90);
+            } else if (bounces[0].speedX > 0 && bounces[0].speedY < 0) {
+                rocket.rot(0);
+            } else if (bounces[0].speedX < 0 && bounces[0].speedY < 0) {
+                rocket.rot(270);
+            } else if (bounces[0].speedX < 0 && bounces[0].speedY > 0) {
+                rocket.rot(180);
+            };
+            
+
+            stage.update();
+        }
+        animate();
+
+        //The text label in the center
+        var label = new zim.Label({text:"I have " + Math.floor(rand) + " " + foodRand + " !", color:"white"})
+            .rot(20)
+            .center(stage)
+        ;
+
+        //Copies the lines and fades them out
+        setInterval(function(){
+            var artCopy = art.clone()
+                .addTo(stage)
+                .animate({
+                    obj:{alpha:0}, 
+                    time:1000, 
+                    call:function(t){stage.removeChild(t)}
+                });
+            art.graphics.clear();
+            circle.animate({obj:{alpha:0}});
+        }, 125);
+
+        //Clears the original lines
+        setInterval(function(){
+            bgClrRnd = bgClr[Math.floor(Math.random() * bgClr.length)];
+            frame.canvas.style.backgroundColor = bgClrRnd;
+            circle.animate({obj:{alpha:1}});
+        },300);
+
+
+
+        // put resizing code in here
+        // resize also gets called initially
+        frame.on("resize", resize);
+        function resize(e) {
+            stageW = frame.width;
+            stageH = frame.height;
+
+        }
+
+        stage.update();
+    }); //end of complete
+}); // end of ready
+</script>
+</head>
+
+<body>
+<!-- canvas with id="myCanvas" is made by zim Frame -->
+</body>
+</html>
